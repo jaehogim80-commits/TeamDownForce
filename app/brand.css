@@ -1,0 +1,104 @@
+/*
+ * 브랜드 레이어 — 절제된 규율 + 타오르는 정열 (2026-09-28)
+ * 시그니처는 주황(--work) 하나. 파랑(--life)은 Life 항목·격자에만 쓴다.
+ * 모션은 '질주' — 빠르게 가속해서 들어오고, 짧게 끝난다. 반복하지 않는다.
+ * 토큰은 globals.css 그대로 (대비·색각 검사 통과값). 여기서는 쓰임새만 바꾼다.
+ */
+:root {
+  --brand: var(--work);
+  --dash-ease: cubic-bezier(.16, 1, .3, 1);   /* 급가속 후 안착 */
+  --run-ease: cubic-bezier(.7, 0, .2, 1);     /* 박차고 나가서 멈춤 */
+}
+
+/* 성공 문구도 시그니처 쪽으로 — 파랑은 Life 전용 */
+.ok { color: var(--fire); }
+
+/* 워드마크 앞 스피드 대시 — 기울어진 주황 막대 하나 */
+.brand::before {
+  content: ''; display: inline-block; width: 14px; height: 3px; margin-right: 8px;
+  background: var(--brand); transform: skewX(-24deg); vertical-align: middle; border-radius: 1px;
+}
+
+/* ── 탭 전환: 달려서 들어온다 ───────────────────────── */
+.dash-in { animation: dash-r 340ms var(--dash-ease) backwards; }
+.dash-in.l { animation-name: dash-l; }
+@keyframes dash-r {
+  from { opacity: 0; transform: translateX(32px) skewX(-5deg); filter: blur(3px); }
+  55% { opacity: 1; filter: blur(0); }
+}
+@keyframes dash-l {
+  from { opacity: 0; transform: translateX(-32px) skewX(5deg); filter: blur(3px); }
+  55% { opacity: 1; filter: blur(0); }
+}
+/* 화면 위를 가르는 불꽃 한 줄 */
+.dash-streak {
+  position: fixed; top: 0; left: 0; z-index: 30; width: 45%; height: 2px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--work) 55%, var(--fire));
+  animation: streak-r 460ms var(--run-ease) forwards; opacity: 0;
+}
+.dash-in.l .dash-streak { background: linear-gradient(270deg, transparent, var(--work) 55%, var(--fire)); animation-name: streak-l; }
+@keyframes streak-r { 0% { opacity: 1; transform: translateX(-110%); } 100% { opacity: 0; transform: translateX(240%); } }
+@keyframes streak-l { 0% { opacity: 1; transform: translateX(240%); } 100% { opacity: 0; transform: translateX(-110%); } }
+
+/* ── 하단 탭: 주황 막대가 탭 사이를 달린다 ─────────── */
+.tabs nav { position: relative; }
+.tab-bar {
+  position: absolute; top: -1px; height: 2px; width: 28px; border-radius: 2px; background: var(--brand);
+  left: calc((100% / var(--tab-n)) * (var(--tab-i) + .5) - 14px);
+  transition: left 420ms var(--run-ease);
+}
+.tabs a[aria-current="page"] { color: var(--ink); }
+
+/* ── 체크 순간: 스피드라인이 항목을 가로지른다 ──────── */
+.item { position: relative; overflow: hidden; }
+.item.work { --axis: var(--work); }
+.item.life { --axis: var(--life); }
+.check-streak {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(90deg, transparent 0%, var(--axis) 70%, transparent 100%);
+  -webkit-mask: repeating-linear-gradient(to bottom, #000 0 2px, transparent 2px 8px);
+  mask: repeating-linear-gradient(to bottom, #000 0 2px, transparent 2px 8px);
+  opacity: 0; animation: check-run 520ms var(--run-ease);
+}
+@keyframes check-run {
+  0% { opacity: .9; transform: translateX(-100%); }
+  100% { opacity: 0; transform: translateX(100%); }
+}
+.box.pop { animation: box-pop 360ms var(--dash-ease); }
+@keyframes box-pop { 0% { transform: scale(.6) skewX(-12deg); } 60% { transform: scale(1.12); } 100% { transform: none; } }
+
+/* ── 로그인: 절제된 타이포 + D 바퀴 ───────────────── */
+.login { min-height: 100dvh; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; padding-top: 56px; padding-bottom: 32px; }
+.login h1 { font-size: 38px; line-height: 1.08; font-weight: 800; margin: 22px 0 0; letter-spacing: -0.03em; }
+.login h1 em { font-style: normal; color: var(--brand); }
+.login-rise > * { animation: dash-r 520ms var(--dash-ease) backwards; }
+.login-rise > *:nth-child(2) { animation-delay: 70ms; }
+.login-rise > *:nth-child(3) { animation-delay: 140ms; }
+
+/* D 바퀴 — 왼쪽 밖에서 달려와 멈춘다. 달릴 때 꼬리는 길게, 멈추면 D 비율로 (DWheel.tsx)
+   dw-run(바퀴)과 dw-trail(꼬리)은 같은 시점에 같은 translateX를 써야 꼬리 앞끝이 바퀴 중심에서 떨어지지 않는다.
+   0%: 바퀴가 화면 밖(cx = -45) · 55%: 거의 도착, 꼬리 최대(190 = 48 × 3.96) · 100%: 정지, D 완성 */
+.dwheel { display: block; width: calc(100% + 32px); margin: 0 -16px; height: auto; overflow: visible; }
+.dw-wheel { transform-box: view-box; animation: dw-run 1300ms linear 240ms backwards; }
+.dw-tail { transform-box: view-box; animation: dw-trail 1300ms linear 240ms backwards; }
+@keyframes dw-run {
+  0%   { transform: translateX(-245px); animation-timing-function: cubic-bezier(.45, 0, .75, .55); }
+  55%  { transform: translateX(-40px);  animation-timing-function: cubic-bezier(.15, .75, .3, 1); }
+  100% { transform: none; }
+}
+@keyframes dw-trail {
+  0%   { transform: translateX(-245px) scaleX(0);    animation-timing-function: cubic-bezier(.45, 0, .75, .55); }
+  55%  { transform: translateX(-40px)  scaleX(3.96); animation-timing-function: cubic-bezier(.15, .75, .3, 1); }
+  100% { transform: none; }
+}
+.dw-spokes { transform-box: view-box; animation: dw-spin 1300ms cubic-bezier(.2, .6, .3, 1) 240ms backwards; }
+@keyframes dw-spin { from { transform: rotate(-1260deg); } }
+.dw-glow { animation: dw-heat 900ms ease-out 1300ms backwards; }
+@keyframes dw-heat { from { opacity: 0; } }
+
+/* 움직임 줄이기 — 전부 끈다 */
+@media (prefers-reduced-motion: reduce) {
+  .dash-in, .login-rise > *, .box.pop, .dw-wheel, .dw-tail, .dw-spokes, .dw-glow { animation: none; }
+  .dash-streak, .check-streak { display: none; }
+  .tab-bar { transition: none; }
+}

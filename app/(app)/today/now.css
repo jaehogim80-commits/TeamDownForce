@@ -1,0 +1,5 @@
+/* 지금 할 항목 — 한 번에 하나, 축 색 링 (듀오링고의 현재 레슨) */
+.item-wrap.now { outline: 2px solid var(--work); outline-offset: 3px; border-radius: 14px; }
+.item-wrap.now.life { outline-color: var(--life); }
+.win.now { color: var(--bg); background: var(--work); }
+.item-wrap.life .win.now { background: var(--life); }
