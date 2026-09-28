@@ -67,38 +67,26 @@
 .box.pop { animation: box-pop 360ms var(--dash-ease); }
 @keyframes box-pop { 0% { transform: scale(.6) skewX(-12deg); } 60% { transform: scale(1.12); } 100% { transform: none; } }
 
-/* ── 로그인: 절제된 타이포 + D 바퀴 ───────────────── */
-.login { min-height: 100dvh; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; padding-top: 56px; padding-bottom: 32px; }
+/* ── 로그인: 힉스필드 사진 위에 절제된 타이포 ───────── */
+.login { position: relative; min-height: 100dvh; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; padding-top: 56px; padding-bottom: 32px; }
+.login-bg { position: fixed; inset: 0; z-index: 0; background: var(--bg); }
+.login-bg img { object-fit: cover; object-position: center; }
+/* 위는 글자가 읽히게 어둡게, 가운데는 사진이 보이게 열고, 아래는 버튼 뒤라 다시 바탕색으로 */
+.login-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(20,18,16,.75) 0%, rgba(20,18,16,.1) 30%, rgba(20,18,16,.15) 62%, var(--bg) 92%);
+}
+.login-rise { position: relative; z-index: 1; }  /* body 배경에 가려지지 않게 음수 z-index는 쓰지 않는다 */
+.login .card.glass { background: rgba(35, 32, 26, .82); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
 .login h1 { font-size: 38px; line-height: 1.08; font-weight: 800; margin: 22px 0 0; letter-spacing: -0.03em; }
 .login h1 em { font-style: normal; color: var(--brand); }
 .login-rise > * { animation: dash-r 520ms var(--dash-ease) backwards; }
 .login-rise > *:nth-child(2) { animation-delay: 70ms; }
 .login-rise > *:nth-child(3) { animation-delay: 140ms; }
 
-/* D 바퀴 — 왼쪽 밖에서 달려와 멈춘다. 달릴 때 꼬리는 길게, 멈추면 D 비율로 (DWheel.tsx)
-   dw-run(바퀴)과 dw-trail(꼬리)은 같은 시점에 같은 translateX를 써야 꼬리 앞끝이 바퀴 중심에서 떨어지지 않는다.
-   0%: 바퀴가 화면 밖(cx = -45) · 55%: 거의 도착, 꼬리 최대(190 = 48 × 3.96) · 100%: 정지, D 완성 */
-.dwheel { display: block; width: calc(100% + 32px); margin: 0 -16px; height: auto; overflow: visible; }
-.dw-wheel { transform-box: view-box; animation: dw-run 1300ms linear 240ms backwards; }
-.dw-tail { transform-box: view-box; animation: dw-trail 1300ms linear 240ms backwards; }
-@keyframes dw-run {
-  0%   { transform: translateX(-245px); animation-timing-function: cubic-bezier(.45, 0, .75, .55); }
-  55%  { transform: translateX(-40px);  animation-timing-function: cubic-bezier(.15, .75, .3, 1); }
-  100% { transform: none; }
-}
-@keyframes dw-trail {
-  0%   { transform: translateX(-245px) scaleX(0);    animation-timing-function: cubic-bezier(.45, 0, .75, .55); }
-  55%  { transform: translateX(-40px)  scaleX(3.96); animation-timing-function: cubic-bezier(.15, .75, .3, 1); }
-  100% { transform: none; }
-}
-.dw-spokes { transform-box: view-box; animation: dw-spin 1300ms cubic-bezier(.2, .6, .3, 1) 240ms backwards; }
-@keyframes dw-spin { from { transform: rotate(-1260deg); } }
-.dw-glow { animation: dw-heat 900ms ease-out 1300ms backwards; }
-@keyframes dw-heat { from { opacity: 0; } }
-
 /* 움직임 줄이기 — 전부 끈다 */
 @media (prefers-reduced-motion: reduce) {
-  .dash-in, .login-rise > *, .box.pop, .dw-wheel, .dw-tail, .dw-spokes, .dw-glow { animation: none; }
+  .dash-in, .login-rise > *, .box.pop { animation: none; }
   .dash-streak, .check-streak { display: none; }
   .tab-bar { transition: none; }
 }

@@ -1,5 +1,9 @@
+import Image from 'next/image'
 import LoginForm from './LoginForm'
-import DWheel from './DWheel'
+
+// 빈 도로를 달려오는 D 바퀴와 주황 빛 꼬리 (힉스필드 z_image, 시안 A — 2026-09-28 사용자 선택).
+// 지금은 힉스필드 저장소 주소를 Vercel 이미지 최적화로 불러온다. 운영 전에는 자체 저장소로 옮긴다
+const LOGIN_BG = 'https://d8j0ntlcm91z4.cloudfront.net/user_3JIch9X05DBc4KilK4wvf4Hk9iZ/hf_20260928_152250_4bf24169-d284-466d-b778-283bd4a2f240.png'
 
 const ERR: Record<string, string> = {
   agree: '만 14세 이상 확인과 개인정보처리방침 동의가 필요합니다.',
@@ -12,6 +16,10 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
 
   return (
     <main className="shell login">
+      <div className="login-bg" aria-hidden="true">
+        <Image src={LOGIN_BG} alt="" fill priority sizes="100vw" quality={70} />
+      </div>
+
       <div className="login-rise">
         <p className="brand">DOWNFORCE</p>
         <h1>
@@ -26,10 +34,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         </p>
       </div>
 
-      <DWheel />
-
       <div className="login-rise">
-        <div className="card" style={{ padding: 18, marginBottom: 18 }}>
+        <div className="card glass" style={{ padding: 18, marginBottom: 18 }}>
           <div className="week" aria-hidden="true">
             {['b', 'w', 'w', 'l', 'b', 'n', 'w'].map((c, i) => (
               <div key={i} className={`cell ${c}`} />
