@@ -1,0 +1,19 @@
+/* 이메일 로그인·가입·재설정 (2026-09-30). 카카오가 주 경로, 이메일은 접어 둔 보조 경로 */
+.or { display: flex; align-items: center; gap: 12px; margin: 16px 0 12px; font-size: 12px; color: var(--muted); }
+.or::before, .or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+.email-box > summary { list-style: none; cursor: pointer; }
+.email-box > summary::-webkit-details-marker { display: none; }
+.email-box[open] > summary { display: none; }
+.email-box form { margin-top: 2px; }
+.email-box .field input { background: rgba(35, 32, 26, .88); }
+
+.auth-links { display: flex; justify-content: center; gap: 16px; margin-top: 14px; font-size: 13px; }
+.auth-links a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+
+.auth-page { padding-top: 48px; padding-bottom: 40px; }
+.auth-page h1 { font-size: 24px; font-weight: 800; margin: 18px 0 6px; letter-spacing: -0.02em; }
+.auth-page .lead { margin-bottom: 22px; }
+.auth-back { display: inline-block; font-size: 13px; color: var(--muted); }
+.notice { background: var(--card); border-radius: 12px; padding: 14px 15px; margin-bottom: 18px; font-size: 14px; line-height: 1.55; }
+.notice b { color: var(--ink); }

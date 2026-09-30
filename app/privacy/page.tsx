@@ -6,7 +6,7 @@ export default function PrivacyPage() {
     <main className="shell doc">
       <p className="brand" style={{ marginBottom: 18 }}>DOWNFORCE</p>
       <h1>개인정보처리방침</h1>
-      <p className="small muted">시행일: 서비스 정식 오픈일 · 최종 수정 2026년 9월 27일</p>
+      <p className="small muted">시행일: 서비스 정식 오픈일 · 최종 수정 2026년 9월 30일</p>
       <div className="draft">초안입니다. 정식 오픈 전 법률 검토를 거쳐 확정합니다. [ ] 표시는 확정 전 채워야 할 항목입니다.</div>
 
       <p>DownForce(이하 &lsquo;서비스&rsquo;)는 이용자의 개인정보를 소중히 다루며, 「개인정보 보호법」에 따라 다음과 같이 처리방침을 공개합니다.</p>
@@ -16,9 +16,11 @@ export default function PrivacyPage() {
         <thead><tr><th>항목</th><th>수집 방법</th><th>목적</th><th>구분</th></tr></thead>
         <tbody>
           <tr><td>카카오 회원번호</td><td>카카오 로그인</td><td>회원 식별, 로그인</td><td>필수</td></tr>
-          <tr><td>닉네임</td><td>카카오 로그인</td><td>프로필 기본 이름</td><td>필수</td></tr>
+          <tr><td>닉네임</td><td>카카오 로그인 · 이메일 가입</td><td>프로필 기본 이름</td><td>필수</td></tr>
           <tr><td>프로필 사진</td><td>카카오 로그인</td><td>프로필 표시</td><td>선택</td></tr>
           <tr><td>카카오계정 이메일</td><td>카카오 로그인</td><td>계정 복구, 다른 로그인 수단 연결, 서비스 공지</td><td>선택</td></tr>
+          <tr><td>이메일 주소</td><td>이메일 가입</td><td>회원 식별, 로그인, 가입 인증·비밀번호 재설정 메일 발송</td><td>이메일 가입 시 필수</td></tr>
+          <tr><td>비밀번호</td><td>이메일 가입</td><td>로그인 (복원할 수 없는 암호화 값으로만 저장)</td><td>이메일 가입 시 필수</td></tr>
           <tr><td>이름·핸들</td><td>이용자 입력</td><td>서비스 내 표시</td><td>필수</td></tr>
           <tr><td>루틴·체크 기록·메모·일정 메모</td><td>이용자 입력</td><td>기록·스트릭·격자·달력 제공</td><td>서비스 이용 시</td></tr>
           <tr><td>기록에 첨부한 사진</td><td>이용자 업로드</td><td>기록 보관, 공유 이미지 생성</td><td>선택</td></tr>
@@ -47,6 +49,7 @@ export default function PrivacyPage() {
           <tr><td>Supabase Inc.</td><td>데이터베이스·인증·파일 저장</td><td>대한민국 서울 리전 (AWS ap-northeast-2)</td></tr>
           <tr><td>Vercel Inc.</td><td>웹 서비스 호스팅</td><td>[실행 리전 확정 후 기재] · 본사 미국</td></tr>
           <tr><td>(주)카카오</td><td>로그인 인증</td><td>대한민국</td></tr>
+          <tr><td>[메일 발송 업체 확정 후 기재]</td><td>가입 인증·비밀번호 재설정 메일 발송</td><td>[확정 후 기재]</td></tr>
         </tbody>
       </table>
       <p>국외 이전 해당 여부와 이전 항목·일시·방법은 [법률 검토 후 기재]합니다.</p>

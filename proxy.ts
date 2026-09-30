@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 // 로그인 없이 열리는 경로. 개인정보처리방침은 카카오 심사에 제출하는 공개 URL이라 반드시 열려 있어야 한다
 const PUBLIC = ['/login', '/privacy', '/auth', '/dev/login', '/dev/signup']
 // 로그인한 사람이 다시 볼 필요 없는 화면
-const GUEST_ONLY = ['/login', '/dev/login', '/dev/signup']
+const GUEST_ONLY = ['/login', '/login/signup', '/dev/login', '/dev/signup']
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request })

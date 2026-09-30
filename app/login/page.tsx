@@ -1,5 +1,7 @@
 import Image from 'next/image'
 import LoginForm from './LoginForm'
+import EmailLogin from './EmailLogin'
+import './auth.css'
 
 // 빈 도로를 달려오는 D 바퀴와 주황 빛 꼬리 (힉스필드 z_image, 시안 A — 2026-09-28 사용자 선택).
 // 지금은 힉스필드 저장소 주소를 Vercel 이미지 최적화로 불러온다. 운영 전에는 자체 저장소로 옮긴다
@@ -9,10 +11,13 @@ const ERR: Record<string, string> = {
   agree: '만 14세 이상 확인과 개인정보처리방침 동의가 필요합니다.',
   kakao: '카카오 로그인을 시작하지 못했습니다. 잠시 후 다시 시도해 주세요.',
   callback: '로그인을 마치지 못했습니다. 다시 시도해 주세요.',
+  cred: '이메일 또는 비밀번호가 맞지 않습니다.',
+  rate: '시도가 너무 많습니다. 잠시 후 다시 시도해 주세요.',
 }
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ e?: string }> }) {
-  const { e } = await searchParams
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ e?: string; m?: string }> }) {
+  const { e, m } = await searchParams
+  const emailOpen = m === 'email'
 
   return (
     <main className="shell login">
@@ -46,8 +51,11 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           </p>
         </div>
 
-        {e && ERR[e] && <p className="err">{ERR[e]}</p>}
+        {e && ERR[e] && !emailOpen && <p className="err">{ERR[e]}</p>}
         <LoginForm />
+        <div className="or">또는</div>
+        {e && ERR[e] && emailOpen && <p className="err">{ERR[e]}</p>}
+        <EmailLogin open={emailOpen} />
       </div>
     </main>
   )

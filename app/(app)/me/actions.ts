@@ -44,7 +44,7 @@ export async function setDayCutoff(formData: FormData) {
   redirect(`${EDIT}?s=cutoff`)
 }
 
-/** 비밀번호 변경 — 이메일로 가입한 계정(개발용)만. 카카오 계정은 비밀번호가 없다 */
+/** 비밀번호 변경 — 이메일로 가입한 계정만. 카카오 계정은 비밀번호가 없다 */
 export async function changePassword(formData: FormData) {
   const password = String(formData.get('password') ?? '')
   const confirm = String(formData.get('confirm') ?? '')
