@@ -1,7 +1,18 @@
-// Supabase 자동 생성 타입을 정리한 것 — downforce-v1 (2026-09-27, 마이그레이션 001~008 기준). 헬퍼 타입만 간소화
+// Supabase 자동 생성 타입을 정리한 것 — downforce-v1 (2026-09-27, 마이그레이션 001~008 기준 · 011 피드는 손으로 추가). 헬퍼 타입만 간소화
 // 스키마를 바꾸면 다시 생성한다. 손으로 고치지 않는다.
 /** 005 — profiles.account_type. 회원이 직접 바꿀 수 없다 */
 export type AccountType = 'member' | 'founder' | 'developer' | 'tester'
+
+/** 011 — 피드 */
+export type FeedEmoji = 'fire' | 'clap' | 'muscle'
+export type FeedReportReason = 'spam' | 'abuse' | 'private' | 'other'
+export type FeedRow = {
+  id: string; user_id: string; handle: string; display_name: string; avatar_url: string | null
+  title: string; axis: 'work' | 'life'; window_start: string | null; window_end: string | null; caption: string | null
+  local_date: string; created_at: string; hidden: boolean
+  streak: number; fire: number; clap: number; muscle: number; my_reaction: FeedEmoji | null
+  import_count: number | null; imported_by_me: boolean; is_mine: boolean
+}
 
 export type Json =
   | string
@@ -17,6 +28,37 @@ export type Database = {
   }
   public: {
     Tables: {
+      // 011 · 피드
+      feed_posts: {
+        Row: { id: string; user_id: string; checkin_id: string; title: string; axis: 'work' | 'life'; window_start: string | null; window_end: string | null; caption: string | null; local_date: string; created_at: string; hidden_at: string | null }
+        Insert: { user_id: string; checkin_id: string; caption?: string | null; title?: string; axis?: 'work' | 'life'; local_date?: string }
+        Update: Record<string, never>
+        Relationships: []
+      }
+      feed_reactions: {
+        Row: { post_id: string; user_id: string; emoji: FeedEmoji; created_at: string }
+        Insert: { post_id: string; user_id: string; emoji: FeedEmoji }
+        Update: { emoji?: FeedEmoji }
+        Relationships: []
+      }
+      feed_imports: {
+        Row: { post_id: string; user_id: string; routine_id: string | null; created_at: string }
+        Insert: never
+        Update: never
+        Relationships: []
+      }
+      feed_mutes: {
+        Row: { user_id: string; muted_user_id: string; created_at: string }
+        Insert: { user_id: string; muted_user_id: string }
+        Update: never
+        Relationships: []
+      }
+      feed_reports: {
+        Row: { post_id: string; reporter_id: string; reason: FeedReportReason; created_at: string }
+        Insert: { post_id: string; reporter_id: string; reason: FeedReportReason }
+        Update: never
+        Relationships: []
+      }
       app_opens: {
         Row: { local_date: string; user_id: string }
         Insert: { local_date: string; user_id: string }
@@ -111,6 +153,9 @@ export type Database = {
     }
     Views: { [_ in never]: never }
     Functions: {
+      // 011 · 피드
+      feed_page: { Args: { p_before?: string | null; p_limit?: number }; Returns: FeedRow[] }
+      feed_import: { Args: { p_post: string }; Returns: 'imported' | 'exists' | 'already' | 'own' | 'gone' }
       current_cutoff: { Args: { p_today: string; p_user: string }; Returns: number }
       recalc_streak: {
         Args: { p_today: string; p_user: string }

@@ -1,0 +1,63 @@
+/* 피드 (2026-09-30) — 한 글 = 오늘 한 일 하나. 숫자는 작게, 사람과 한 일이 크게 */
+.post { padding: 14px 14px 10px; }
+.post-head { display: flex; align-items: center; gap: 10px; }
+.avatar {
+  width: 34px; height: 34px; border-radius: 50%; flex: none; overflow: hidden;
+  background: var(--card2); display: grid; place-items: center; font-weight: 800; font-size: 14px; color: var(--muted);
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.post-who { min-width: 0; flex: 1; line-height: 1.25; }
+.post-who b { font-size: 14px; }
+.post-who .small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.post-more { width: 32px; height: 32px; border-radius: 8px; color: var(--muted); font-size: 18px; line-height: 1; }
+.post-more:hover { background: var(--card2); }
+
+/* 한 일 — Work/Life 색 막대가 왼쪽에 */
+.post-body { margin: 12px 0 4px; padding: 10px 12px; border-radius: 10px; background: var(--card2); border-left: 3px solid var(--axis); }
+.post.work { --axis: var(--work); }
+.post.life { --axis: var(--life); }
+.post-title { font-size: 16px; font-weight: 800; letter-spacing: -0.01em; }
+.post-tags { display: flex; gap: 8px; align-items: center; margin-top: 4px; font-size: 12px; color: var(--muted); }
+.post-tags .ax { color: var(--axis); font-weight: 700; }
+.post-caption { margin: 8px 2px 0; font-size: 14px; white-space: pre-wrap; word-break: break-word; }
+
+.post-foot { display: flex; align-items: center; gap: 6px; margin-top: 10px; }
+.react {
+  display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 10px; border-radius: 99px;
+  background: var(--card2); font-size: 15px; transition: transform 160ms var(--dash-ease, ease);
+}
+.react b { font-size: 12px; color: var(--muted); font-weight: 700; min-width: 6px; }
+.react[aria-pressed="true"] { background: rgba(245, 81, 30, .16); box-shadow: inset 0 0 0 1.5px var(--work); }
+.react[aria-pressed="true"] b { color: var(--ink); }
+.react:active:not(:disabled) { transform: scale(.92); }
+.react:disabled { cursor: default; }
+.take {
+  margin-left: auto; height: 32px; padding: 0 14px; border-radius: 99px; font-weight: 700; font-size: 13px;
+  background: var(--ink); color: var(--bg);
+}
+.take:disabled { background: var(--card2); color: var(--muted); cursor: default; }
+.post-note { margin: 8px 2px 0; font-size: 12px; color: var(--muted); }
+.post-note.me { color: var(--fire); }
+
+/* ⋯ 메뉴 — 한 단어 버튼 */
+.post-menu { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+.post-menu button { height: 30px; padding: 0 12px; border-radius: 99px; background: var(--card2); font-size: 12.5px; font-weight: 600; }
+.post-menu .danger { color: #FF8A6B; }
+
+.feed-more { display: block; text-align: center; padding: 12px; margin-top: 4px; color: var(--muted); font-size: 13px; }
+.feed-empty { text-align: center; padding: 36px 16px; }
+.feed-empty b { display: block; font-size: 15px; margin-bottom: 6px; }
+
+/* 오늘 탭 — 올리기 */
+.share-line { display: flex; align-items: center; gap: 8px; }
+.share-btn { font-size: 12px; font-weight: 700; color: var(--work); padding: 4px 2px; white-space: nowrap; }
+.share-done { font-size: 12px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.share-sheet { margin: 6px 0 2px; padding: 10px 12px; border-radius: 10px; background: var(--card2); font-size: 12.5px; }
+.share-sheet p { color: var(--muted); }
+.share-sheet .row2 { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.share-sheet .row2 label { display: flex; align-items: center; gap: 6px; margin-right: auto; }
+.share-sheet .row2 input { accent-color: var(--work); }
+.share-sheet button { height: 30px; padding: 0 12px; border-radius: 99px; font-weight: 700; background: var(--card); }
+.share-sheet button.go { background: var(--work); color: #fff; }
+
+@media (prefers-reduced-motion: reduce) { .react { transition: none; } }

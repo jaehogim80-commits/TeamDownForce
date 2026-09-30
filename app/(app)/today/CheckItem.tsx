@@ -1,7 +1,9 @@
 'use client'
 
 import { useOptimistic, useState, useTransition } from 'react'
+import Link from 'next/link'
 import { saveCheckNote, toggleCheck } from './actions'
+import { postCheck } from '../feed/actions'
 import { useNowFocus } from './NowFocus'
 
 /** 'HH:MM:SS' → 'HH:MM' */
@@ -18,6 +20,7 @@ export default function CheckItem(props: {
   done: boolean
   offWindow: boolean
   note: string | null
+  posted: boolean
 }) {
   const [pending, start] = useTransition()
   const [done, setDone] = useOptimistic(props.done)
@@ -25,6 +28,11 @@ export default function CheckItem(props: {
   const [draft, setDraft] = useState(props.note ?? '')
   const [saving, startSave] = useTransition()
   const [burst, setBurst] = useState(0) // 체크할 때마다 스피드라인 한 번
+  const [sheet, setSheet] = useState(false) // 올리기 확인
+  const [withNote, setWithNote] = useState(true)
+  const [posting, startPost] = useTransition()
+  const [justPosted, setJustPosted] = useState(false)
+  const posted = props.posted || justPosted
   const hasWindow = !!(props.windowStart && props.windowEnd)
   const { focusId, setDone: markDone } = useNowFocus()
   const isNow = focusId === props.id // 지금 할 항목 — 한 번에 하나만
@@ -40,6 +48,7 @@ export default function CheckItem(props: {
         onClick={() =>
           start(async () => {
             if (!done) setBurst((b) => b + 1)
+            else setJustPosted(false) // 체크를 취소하면 올린 글도 DB에서 함께 내려간다 (011)
             setDone(!done)
             markDone(props.id, !done)
             await toggleCheck(props.id, !done)
@@ -87,9 +96,55 @@ export default function CheckItem(props: {
               <button type="submit" disabled={saving}>{saving ? '저장 중' : '저장'}</button>
             </form>
           ) : (
-            <button type="button" className="note-view" onClick={() => setEditing(true)}>
-              {props.note ? <span>💬 {props.note}</span> : <span className="muted">+ 코멘트</span>}
-            </button>
+            <div className="share-line">
+              <button type="button" className="note-view" onClick={() => setEditing(true)} style={{ flex: 1 }}>
+                {props.note ? <span>💬 {props.note}</span> : <span className="muted">+ 코멘트</span>}
+              </button>
+              {/* 피드 올리기 — 본인이 누를 때만. 자동 공개 없음 (피드 결정요약 2-1) */}
+              {posted ? (
+                <Link href="/feed" className="share-done">피드 ✓</Link>
+              ) : (
+                !sheet && (
+                  <button type="button" className="share-btn" onClick={() => setSheet(true)}>
+                    올리기
+                  </button>
+                )
+              )}
+            </div>
+          )}
+          {sheet && !posted && (
+            <div className="share-sheet">
+              <p>
+                <b style={{ color: 'var(--ink)' }}>DownForce 전체에 공개됩니다.</b> 체크를 취소하면 글도 내려갑니다.
+              </p>
+              <div className="row2">
+                {props.note ? (
+                  <label>
+                    <input type="checkbox" checked={withNote} onChange={(e) => setWithNote(e.target.checked)} />
+                    코멘트도
+                  </label>
+                ) : (
+                  <span style={{ marginRight: 'auto' }} />
+                )}
+                <button type="button" onClick={() => setSheet(false)}>취소</button>
+                <button
+                  type="button"
+                  className="go"
+                  disabled={posting}
+                  onClick={() =>
+                    startPost(async () => {
+                      const r = await postCheck(props.id, withNote && !!props.note)
+                      if (r.ok) {
+                        setJustPosted(true)
+                        setSheet(false)
+                      }
+                    })
+                  }
+                >
+                  {posting ? '올리는 중' : '올리기'}
+                </button>
+              </div>
+            </div>
           )}
         </div>
       )}

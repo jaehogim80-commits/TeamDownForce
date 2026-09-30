@@ -6,6 +6,7 @@ import CheckItem from './CheckItem'
 import { AxisFilter } from '../AxisToggle'
 import { NowFocusProvider } from './NowFocus'
 import { minutesIn } from '@/lib/nowFocus'
+import '../feed/feed.css'
 
 export default async function TodayPage({ searchParams }: { searchParams: Promise<{ edit?: string }> }) {
   // 예전 편집 주소(?edit=1)는 편집 페이지로 보낸다
@@ -20,10 +21,13 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
 
   const [{ data: routines }, { data: todayChecks }, { data: logs }, { data: streak }] = await Promise.all([
     supabase.from('routines').select('id,title,axis,category,hint,window_start,window_end').is('archived_at', null).order('sort_order'),
-    supabase.from('checkins').select('routine_id,note,off_window').eq('local_date', today),
+    supabase.from('checkins').select('id,routine_id,note,off_window').eq('local_date', today),
     supabase.from('day_logs').select('local_date,work_done,life_done').gte('local_date', from).lte('local_date', addDays(monday, 6)),
     supabase.from('user_streaks').select('current_streak,last_active_on').maybeSingle(),
   ])
+  // 오늘 피드에 올린 체크 (011) — 올린 항목은 '피드 ✓'로 보인다
+  const { data: posts } = await supabase.from('feed_posts').select('checkin_id').eq('user_id', user.id).eq('local_date', today)
+  const posted = new Set((posts ?? []).map((p) => p.checkin_id))
 
   const done = new Set((todayChecks ?? []).map((c) => c.routine_id))
   const checkOf = new Map((todayChecks ?? []).map((c) => [c.routine_id, c]))
@@ -146,6 +150,7 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
               done={done.has(r.id)}
               offWindow={checkOf.get(r.id)?.off_window ?? false}
               note={checkOf.get(r.id)?.note ?? null}
+              posted={posted.has(checkOf.get(r.id)?.id ?? '')}
             />
           ))}
         </div>

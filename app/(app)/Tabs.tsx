@@ -3,9 +3,10 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-// 탭은 3개 — 크루는 '마이페이지' 안으로 (제품설계 5-E)
+// 탭은 4개 — 크루는 '마이페이지' 안으로 (제품설계 5-E). 피드는 크루 전 소속감의 장치 (피드 결정요약, 2026-09-30)
 const TABS = [
   { href: '/today', label: '오늘' },
+  { href: '/feed', label: '피드' },
   { href: '/records', label: '기록' },
   { href: '/me', label: '마이페이지' },
 ]
