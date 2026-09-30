@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import HandleField from '@/app/HandleField'
 import { getViewer } from '@/lib/session'
 import { cutoffLabel } from '@/lib/date'
 import { getMembership, numberLabel } from '@/lib/membership'
@@ -50,10 +51,7 @@ export default async function EditPage({ searchParams }: { searchParams: Promise
           <span>이름 (1~20자)</span>
           <input name="display_name" defaultValue={profile.display_name} maxLength={20} required />
         </label>
-        <label className="field">
-          <span>핸들 · 영문 소문자·숫자·밑줄 3~20자</span>
-          <input name="handle" defaultValue={profile.handle} pattern="[a-z0-9_]{3,20}" maxLength={20} required />
-        </label>
+        <HandleField defaultValue={profile.handle} />
         <button className="btn primary" type="submit">프로필 저장</button>
       </form>
 

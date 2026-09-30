@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import HandleField from '@/app/HandleField'
 import { getViewer } from '@/lib/session'
 import { finishOnboarding } from './actions'
 import { badgeOf, getMembership, numberLabel } from '@/lib/membership'
@@ -37,10 +38,7 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
           <span>이름 (1~20자)</span>
           <input name="display_name" defaultValue={profile.display_name} maxLength={20} required />
         </label>
-        <label className="field">
-          <span>핸들 · 영문 소문자·숫자·밑줄 3~20자</span>
-          <input name="handle" defaultValue={profile.handle.startsWith('u_') ? '' : profile.handle} placeholder="jaeho_kim" pattern="[a-z0-9_]{3,20}" maxLength={20} required />
-        </label>
+        <HandleField defaultValue={profile.handle.startsWith('u_') ? '' : profile.handle} />
         <button className="btn primary" type="submit" style={{ marginTop: 8 }}>시작하기</button>
       </form>
     </main>
