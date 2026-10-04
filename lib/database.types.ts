@@ -1,4 +1,4 @@
-// Supabase 자동 생성 타입을 정리한 것 — downforce-v1 (2026-09-27, 마이그레이션 001~008 기준 · 011 피드는 손으로 추가). 헬퍼 타입만 간소화
+// Supabase 자동 생성 타입을 정리한 것 — downforce-v1 (2026-09-27, 마이그레이션 001~008 기준 · 011 피드·012 연속 일수는 손으로 추가). 헬퍼 타입만 간소화
 // 스키마를 바꾸면 다시 생성한다. 손으로 고치지 않는다.
 /** 005 — profiles.account_type. 회원이 직접 바꿀 수 없다 */
 export type AccountType = 'member' | 'founder' | 'developer' | 'tester'
@@ -156,6 +156,8 @@ export type Database = {
       // 011 · 피드
       feed_page: { Args: { p_before?: string | null; p_limit?: number }; Returns: FeedRow[] }
       feed_import: { Args: { p_post: string }; Returns: 'imported' | 'exists' | 'already' | 'own' | 'gone' }
+      // 012 · 항목별 연속 일수
+      routine_streaks: { Args: { p_today: string }; Returns: { routine_id: string; streak: number; done_today: boolean }[] }
       current_cutoff: { Args: { p_today: string; p_user: string }; Returns: number }
       recalc_streak: {
         Args: { p_today: string; p_user: string }

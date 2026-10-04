@@ -7,6 +7,7 @@ import { AxisFilter } from '../AxisToggle'
 import { NowFocusProvider } from './NowFocus'
 import { minutesIn } from '@/lib/nowFocus'
 import '../feed/feed.css'
+import './streak.css'
 
 export default async function TodayPage({ searchParams }: { searchParams: Promise<{ edit?: string }> }) {
   // 예전 편집 주소(?edit=1)는 편집 페이지로 보낸다
@@ -28,6 +29,9 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
   // 오늘 피드에 올린 체크 (011) — 올린 항목은 '피드 ✓'로 보인다
   const { data: posts } = await supabase.from('feed_posts').select('checkin_id').eq('user_id', user.id).eq('local_date', today)
   const posted = new Set((posts ?? []).map((p) => p.checkin_id))
+  // 항목별 연속 일수 (012) — 오늘을 뺀 '어제까지'를 넘기고, 오늘 체크 여부는 화면이 더한다
+  const { data: streaks } = await supabase.rpc('routine_streaks', { p_today: today })
+  const streakBase = new Map((streaks ?? []).map((s) => [s.routine_id, s.done_today ? s.streak - 1 : s.streak]))
 
   const done = new Set((todayChecks ?? []).map((c) => c.routine_id))
   const checkOf = new Map((todayChecks ?? []).map((c) => [c.routine_id, c]))
@@ -151,6 +155,7 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
               offWindow={checkOf.get(r.id)?.off_window ?? false}
               note={checkOf.get(r.id)?.note ?? null}
               posted={posted.has(checkOf.get(r.id)?.id ?? '')}
+              streakBase={streakBase.get(r.id) ?? 0}
             />
           ))}
         </div>

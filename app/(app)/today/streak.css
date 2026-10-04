@@ -1,0 +1,59 @@
+/* 항목별 연속 일수 (2026-10-04) — 단계가 오를수록 불꽃이 짙어진다. 상시 애니메이션은 없다 */
+.streak {
+  display: inline-flex; align-items: center; gap: 2px; margin-left: 7px; padding: 1px 7px; border-radius: 99px;
+  font-size: 11px; font-weight: 800; line-height: 1.5; white-space: nowrap; vertical-align: 1px;
+  color: var(--muted); background: var(--card2); transition: opacity 200ms ease;
+}
+.streak.s1 { color: var(--work); background: rgba(245, 81, 30, .13); }
+.streak.s2 { color: #fff; background: var(--work); }
+.streak.s3 { color: #fff; background: linear-gradient(90deg, var(--work), #FF8A3D); box-shadow: 0 0 10px rgba(245, 81, 30, .45); }
+.streak.s4 { color: #1D1408; background: linear-gradient(90deg, var(--work), var(--fire)); box-shadow: 0 0 14px rgba(255, 150, 50, .5); }
+.streak.s5 { color: #1D1408; background: linear-gradient(90deg, var(--work), var(--fire)); box-shadow: 0 0 0 1.5px var(--fire), 0 0 18px rgba(255, 190, 70, .6); }
+/* 오늘 아직 — 흐리게. 오늘 하면 이어진다 */
+.streak.wait { opacity: .42; box-shadow: none; }
+
+/* 새 단계에 올라서는 순간 — 한 번만 */
+.streak.up { animation: streak-up 700ms var(--dash-ease) both; }
+@keyframes streak-up {
+  0% { transform: scale(.4) rotate(-8deg); opacity: 0; }
+  55% { transform: scale(1.35) rotate(3deg); opacity: 1; }
+  100% { transform: none; }
+}
+.milestone {
+  position: absolute; inset: 0; pointer-events: none; display: flex; align-items: center; justify-content: flex-end;
+  padding-right: 14px; overflow: hidden; border-radius: inherit;
+}
+/* 불꽃 띠가 항목을 왼→오로 가로지른다 */
+.milestone::before {
+  content: ''; position: absolute; inset: -20% -10%;
+  background: linear-gradient(100deg, transparent 20%, rgba(245, 81, 30, .0) 30%, rgba(245, 81, 30, .55) 52%, rgba(255, 210, 74, .7) 60%, transparent 75%);
+  transform: translateX(-100%); animation: fire-sweep 1100ms var(--run-ease) forwards;
+}
+/* 연출 중에는 시간 칩을 잠깐 숨겨 글자가 겹치지 않게 */
+.item-wrap.celebrating .win { opacity: 0; transition: opacity 120ms; }
+.milestone b {
+  position: relative; font-size: 13px; font-weight: 900; color: var(--fire); letter-spacing: -0.01em;
+  padding: 4px 11px; border-radius: 99px; background: rgba(20, 18, 16, .82);
+  text-shadow: 0 0 12px rgba(245, 81, 30, .8); opacity: 0;
+  animation: ms-label 1800ms var(--dash-ease) 250ms forwards;
+}
+@keyframes fire-sweep { to { transform: translateX(100%); } }
+@keyframes ms-label {
+  0% { opacity: 0; transform: translateX(16px) skewX(-8deg); }
+  25% { opacity: 1; transform: none; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+/* 큰 단계(30일+)는 항목 테두리도 한 번 타오른다 */
+.item-wrap.blaze .item { animation: blaze 1400ms ease-out; }
+@keyframes blaze {
+  0% { box-shadow: 0 0 0 0 rgba(255, 170, 60, 0); }
+  30% { box-shadow: 0 0 0 2px var(--fire), 0 0 28px rgba(245, 81, 30, .7); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 170, 60, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .streak.up, .item-wrap.blaze .item { animation: none; }
+  .milestone::before { display: none; }
+  .milestone b { animation: none; opacity: 1; }
+}
