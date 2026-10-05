@@ -43,7 +43,11 @@ input { font: inherit; color: inherit; }
 .cell.today { outline: 2px solid var(--ink); outline-offset: 2px; }
 .week { display: flex; justify-content: space-between; gap: 6px; }
 .week .col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.week.fire .cell:not(.future) { box-shadow: 0 0 0 2px var(--fire); }
+/* 퍼펙트 위크를 채운 주 — 과열된 기계처럼 테두리와 아랫단에 열기가 남는다 (정적, 5-B "훈장처럼 남긴다") */
+.week.fire .cell:not(.future), .month .day.pw {
+  box-shadow: 0 0 0 1.5px #E8541C, 0 0 10px rgba(200, 50, 12, .45), inset 0 -8px 11px -7px rgba(255, 96, 24, .7), inset 0 0 0 1px rgba(255, 190, 120, .18);
+}
+.week.fire .cell.today { outline-color: #FFB36B; }
 
 /* 밸런스 바 (4.5) — 나무라지 않는다. 사실만 */
 .bal { display: flex; gap: 2px; height: 10px; border-radius: 5px; overflow: hidden; position: relative; margin: 10px 0 6px; }
@@ -206,5 +210,4 @@ input { font: inherit; color: inherit; }
 .axis-filter[data-view="work"] [data-axis="life"], .axis-filter[data-view="life"] [data-axis="work"] { display: none; }
 
 /* 퍼펙트 위크 줄 (5-B) — 달성 뒤에는 정적인 불꽃 테두리로 남는다 */
-.month .day.pw { box-shadow: 0 0 0 2px var(--fire); }
-.legend i.pw-i { box-shadow: 0 0 0 2px var(--fire); background: transparent; }
+.legend i.pw-i { box-shadow: 0 0 0 1.5px #E8541C, 0 0 6px rgba(200, 50, 12, .6), inset 0 -4px 5px -3px rgba(255, 96, 24, .8); background: transparent; }
