@@ -97,7 +97,7 @@ input { font: inherit; color: inherit; }
 .chip { display: inline-block; padding: 3px 9px; border-radius: 99px; background: var(--card2); font-size: 11px; font-weight: 700; color: var(--muted); }
 .row { display: flex; justify-content: space-between; align-items: center; padding: 14px 2px; border-bottom: 1px solid var(--line); }
 .row:last-child { border-bottom: 0; }
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); text-align: center; }
 .stats b { display: block; font-size: 22px; }
 
 .doc { line-height: 1.75; }
@@ -204,3 +204,7 @@ input { font: inherit; color: inherit; }
 .axis-btn.life { box-shadow: inset 0 0 0 1.5px var(--life); color: var(--life); }
 .axis-btn.life .axis-dot { background: var(--life); }
 .axis-filter[data-view="work"] [data-axis="life"], .axis-filter[data-view="life"] [data-axis="work"] { display: none; }
+
+/* 퍼펙트 위크 줄 (5-B) — 달성 뒤에는 정적인 불꽃 테두리로 남는다 */
+.month .day.pw { box-shadow: 0 0 0 2px var(--fire); }
+.legend i.pw-i { box-shadow: 0 0 0 2px var(--fire); background: transparent; }

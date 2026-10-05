@@ -25,7 +25,8 @@ export default async function RecordsPage({ searchParams }: { searchParams: Prom
   const sel = isYmd(sp.d) && sp.d.startsWith(ym) ? sp.d : today.startsWith(ym) ? today : null
 
   const [{ data: logs }, { data: notes }, { data: checks }] = await Promise.all([
-    supabase.from('day_logs').select('local_date,work_done,life_done,work_required,work_completed,life_required,life_completed').gte('local_date', first).lte('local_date', last),
+    // 달력 앞뒤로 걸친 주까지 읽는다 — 퍼펙트 위크는 월 경계를 넘는 주도 7칸으로 판정한다 (5-B)
+    supabase.from('day_logs').select('local_date,work_done,life_done,work_required,work_completed,life_required,life_completed').gte('local_date', weekStart(first)).lte('local_date', addDays(weekStart(last), 6)),
     supabase.from('calendar_notes').select('id,note_date,time_of_day,body').gte('note_date', first).lte('note_date', last)
       .order('note_date').order('time_of_day', { nullsFirst: true }).order('created_at'),
     sel
@@ -44,6 +45,15 @@ export default async function RecordsPage({ searchParams }: { searchParams: Prom
     cells.push({ d, c: d > today ? 'future' : cellOf(r?.work_done, r?.life_done) })
   }
   const count = (k: string) => cells.filter((x) => x.c === k).length
+
+  // 퍼펙트 위크 (5-B) — 그 주 월~일 7칸이 전부 채워진 줄. 지난 달·다음 달에 걸친 날도 칸으로 센다
+  const filled = (d: string) => d <= today && cellOf(byDate.get(d)?.work_done, byDate.get(d)?.life_done) !== 'n'
+  const perfectWeeks = new Set<string>()
+  for (let i = 0; i < cells.length; i += 7) {
+    const mon = cells[i].d
+    if (Array.from({ length: 7 }, (_, k) => addDays(mon, k)).every(filled)) perfectWeeks.add(mon)
+  }
+  const inPerfect = (d: string) => perfectWeeks.has(weekStart(d))
   const [y, m] = ym.split('-').map(Number)
   const href = (month: string, day?: string) => `/records?m=${month}${day ? `&d=${day}` : ''}`
 
@@ -73,7 +83,7 @@ export default async function RecordsPage({ searchParams }: { searchParams: Prom
                 key={x.d}
                 href={href(ym, x.d)}
                 scroll={false}
-                className={`cell day ${x.c}${x.d === today ? ' today' : ''}${x.d === sel ? ' sel' : ''}${noteDays.has(x.d) ? ' note' : ''}`}
+                className={`cell day ${x.c}${x.d === today ? ' today' : ''}${x.d === sel ? ' sel' : ''}${noteDays.has(x.d) ? ' note' : ''}${inPerfect(x.d) ? ' pw' : ''}`}
                 aria-label={`${labelKo(x.d)}${noteDays.has(x.d) ? ', 메모 있음' : ''}`}
                 aria-current={x.d === sel ? 'date' : undefined}
               >
@@ -88,6 +98,7 @@ export default async function RecordsPage({ searchParams }: { searchParams: Prom
           <span><i style={{ background: 'linear-gradient(135deg,var(--work) 0 50%,var(--life) 50%)' }} />둘 다 {count('b')}</span>
           <span><i style={{ boxShadow: 'inset 0 0 0 1.5px var(--line)' }} />쉰 날 {count('n')}</span>
           <span><i className="dot-i" />메모</span>
+          {perfectWeeks.size > 0 && <span style={{ color: 'var(--fire)' }}><i className="pw-i" />퍼펙트 위크 {perfectWeeks.size}</span>}
         </div>
       </section>
 

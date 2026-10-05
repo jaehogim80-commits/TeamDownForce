@@ -8,13 +8,14 @@ import DeleteAccount from './DeleteAccount'
 export default async function MyPage() {
   const { supabase, user, profile, today, cutoff } = await getViewer()
   const year = today.slice(0, 4)
-  const [{ data: streak }, { count: yearDays }, membership, { data: founder }, { data: pendingCutoff }] = await Promise.all([
+  const [{ data: streak }, { count: yearDays }, membership, { data: founder }, { data: pendingCutoff }, { data: summary }] = await Promise.all([
     supabase.from('user_streaks').select('current_streak,longest_streak').maybeSingle(),
     // 기록일 = Work 또는 Life 체크리스트를 완료한 날 (스트릭과 같은 기준, 007)
     supabase.from('day_logs').select('*', { count: 'exact', head: true }).gte('local_date', `${year}-01-01`).or('work_done.eq.true,life_done.eq.true'),
     getMembership(supabase, user.id),
     supabase.rpc('is_founder'),
     supabase.from('day_cutoff_settings').select('effective_on,hour').gt('effective_on', today).order('effective_on').limit(1).maybeSingle(),
+    supabase.rpc('streak_summary', { p_today: today }), // 퍼펙트 위크 수 (013)
   ])
   const joined = profile.created_at.slice(0, 7).replace('-', '.')
   const badge = badgeOf(membership)
@@ -50,6 +51,7 @@ export default async function MyPage() {
         <div><b>{streak?.current_streak ?? 0}</b><span className="small muted">연속</span></div>
         <div><b>{streak?.longest_streak ?? 0}</b><span className="small muted">최장</span></div>
         <div><b>{yearDays ?? 0}</b><span className="small muted">{year}년 기록일</span></div>
+        <div><b>{summary?.[0]?.perfect_weeks ?? 0}</b><span className="small muted">퍼펙트 위크</span></div>
       </section>
 
       <section className="card">

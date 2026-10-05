@@ -1,0 +1,72 @@
+/* 최장 기록 (결정요약 5장) — 평소엔 작게, 3일 전부터 크게, 넘는 순간 한 번 */
+.rec-hero { position: relative; overflow: hidden; }
+.rec { margin-top: 8px; font-size: 12px; font-weight: 700; line-height: 1.4; }
+.rec-quiet { color: var(--muted); font-weight: 600; }
+.rec-near {
+  display: inline-flex; align-items: baseline; gap: 6px; flex-wrap: wrap;
+  padding: 4px 10px; border-radius: 99px; font-size: 13px;
+  color: var(--fire); background: rgba(255, 210, 74, .1); box-shadow: inset 0 0 0 1.5px rgba(255, 210, 74, .45);
+}
+.rec-near b { font-size: 15px; font-weight: 900; }
+.rec-near .rec-sub { font-size: 11px; font-weight: 600; color: var(--muted); }
+.rec-beat { color: var(--fire); }
+.rec-beat::before { content: '▲ '; font-size: 10px; }
+
+/* 처음 넘는 순간 — 불꽃 띠가 카드를 가로지르고 문구가 떴다 사라진다 */
+.rec-burst {
+  position: absolute; inset: 0; pointer-events: none; display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: 12px; border-radius: inherit;
+}
+.rec-burst::before {
+  content: ''; position: absolute; inset: -20% -10%;
+  background: linear-gradient(100deg, transparent 20%, rgba(245, 81, 30, .55) 50%, rgba(255, 210, 74, .75) 60%, transparent 76%);
+  transform: translateX(-100%); animation: rec-sweep 1200ms var(--run-ease) forwards;
+}
+.rec-burst b {
+  position: relative; font-size: 14px; font-weight: 900; color: var(--fire);
+  padding: 5px 13px; border-radius: 99px; background: rgba(20, 18, 16, .86);
+  text-shadow: 0 0 12px rgba(245, 81, 30, .8); opacity: 0;
+  animation: rec-label 2200ms var(--dash-ease) 280ms forwards;
+}
+.rec-burning { animation: rec-blaze 1500ms ease-out; }
+.rec-burning .rec { opacity: 0; transition: opacity 120ms; } /* 연출 중에는 아래 줄을 잠깐 숨겨 글자가 겹치지 않게 */
+.rec-burning .n { animation: rec-num 700ms var(--dash-ease); }
+@keyframes rec-sweep { to { transform: translateX(100%); } }
+@keyframes rec-label {
+  0% { opacity: 0; transform: translateY(10px) skewX(-8deg); }
+  20% { opacity: 1; transform: none; }
+  85% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes rec-blaze {
+  0% { box-shadow: 0 0 0 0 rgba(255, 170, 60, 0); }
+  30% { box-shadow: 0 0 0 2px var(--fire), 0 0 30px rgba(245, 81, 30, .7); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 170, 60, 0); }
+}
+@keyframes rec-num { 0% { transform: scale(.7); } 55% { transform: scale(1.18); color: var(--fire); } 100% { transform: none; } }
+
+/* 퍼펙트 위크 (5-B) — 7칸째를 채우는 순간 칸이 왼쪽부터 차례로 타오른다 */
+.pw-card { position: relative; overflow: hidden; }
+.pw-igniting .week .cell:not(.future) { animation: pw-cell 900ms var(--dash-ease) both; }
+@keyframes pw-cell {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 210, 74, 0); }
+  45% { transform: scale(1.18) translateY(-3px); box-shadow: 0 0 0 2px var(--fire), 0 0 18px rgba(245, 81, 30, .8); }
+  100% { transform: none; box-shadow: 0 0 0 2px var(--fire); }
+}
+.pw-burst {
+  position: absolute; left: 0; right: 0; top: 8px; pointer-events: none; display: flex; justify-content: center;
+  opacity: 0; animation: pw-fade 2600ms ease forwards 650ms;
+}
+/* 문구는 '이번 주' 머리줄 자리에 — 타오르는 칸을 가리지 않는다 */
+.pw-igniting .pw-head { opacity: 0; transition: opacity 120ms; }
+.pw-burst b {
+  font-size: 15px; font-weight: 900; color: var(--fire); padding: 6px 14px; border-radius: 99px;
+  background: rgba(20, 18, 16, .88); text-shadow: 0 0 12px rgba(245, 81, 30, .8);
+}
+@keyframes pw-fade { 0% { opacity: 0; } 15% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rec-burning, .rec-burning .n, .pw-igniting .week .cell:not(.future) { animation: none; }
+  .rec-burst::before { display: none; }
+  .rec-burst b, .pw-burst { animation: none; opacity: 1; }
+}

@@ -6,8 +6,11 @@ import CheckItem from './CheckItem'
 import { AxisFilter } from '../AxisToggle'
 import { NowFocusProvider } from './NowFocus'
 import { minutesIn } from '@/lib/nowFocus'
+import StreakHero from './StreakHero'
+import WeekStrip from './WeekStrip'
 import '../feed/feed.css'
 import './streak.css'
+import './record.css'
 
 export default async function TodayPage({ searchParams }: { searchParams: Promise<{ edit?: string }> }) {
   // 예전 편집 주소(?edit=1)는 편집 페이지로 보낸다
@@ -32,14 +35,18 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
   // 항목별 연속 일수 (012) — 오늘을 뺀 '어제까지'를 넘기고, 오늘 체크 여부는 화면이 더한다
   const { data: streaks } = await supabase.rpc('routine_streaks', { p_today: today })
   const streakBase = new Map((streaks ?? []).map((s) => [s.routine_id, s.done_today ? s.streak - 1 : s.streak]))
+  // 하루 전체 연속 · 지난 최고 기록 (013) — 최장 기록 갱신은 '이미 끝난 연속 중 최장'을 넘을 대상으로 삼는다
+  const { data: summary } = await supabase.rpc('streak_summary', { p_today: today })
+  const sum = summary?.[0]
 
   const done = new Set((todayChecks ?? []).map((c) => c.routine_id))
   const checkOf = new Map((todayChecks ?? []).map((c) => [c.routine_id, c]))
   const byDate = new Map((logs ?? []).map((l) => [l.local_date, l]))
 
   // 캐시를 그대로 믿지 않는다 — 끊기는 건 아무도 아무것도 안 할 때 일어난다 (4.2)
-  const shown =
+  const cached =
     streak && streak.last_active_on && daysBetween(streak.last_active_on, today) <= 1 ? streak.current_streak : 0
+  const shown = sum?.current_streak ?? cached
 
   // 칸 색은 "그 테마의 체크리스트를 전부 끝냈는가" (007) — 판정은 DB가 한다
   const t = byDate.get(today)
@@ -59,7 +66,7 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
     const d = addDays(monday, i)
     const r = byDate.get(d)
     const future = d > today
-    return { d, future, c: future ? 'future' : cellOf(r?.work_done, r?.life_done) }
+    return { d, future, c: future ? 'future' : cellOf(r?.work_done, r?.life_done), wd: weekdayKo(d), isToday: d === today }
   })
   const perfect = week.every((x) => !x.future && x.c !== 'n')
 
@@ -75,19 +82,7 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
         <span className="small muted">{labelKo(today)}</span>
       </header>
 
-      <section className="card hero">
-        <div>
-          <p className="label">연속</p>
-          <p className="n">
-            {shown}
-            <small>일</small>
-          </p>
-        </div>
-        <div className="today">
-          <div className={`cell lg ${todayCell}`} />
-          <p className="small muted" style={{ marginTop: 6 }}>오늘</p>
-        </div>
-      </section>
+      <StreakHero current={shown} prevBest={sum?.prev_best ?? 0} todayCell={todayCell} />
 
       <section className="card">
         <p className="label">최근 7일 밸런스 · 완료한 날</p>
@@ -163,20 +158,7 @@ export default async function TodayPage({ searchParams }: { searchParams: Promis
       </AxisFilter>
       </NowFocusProvider>
 
-      <section className="card" style={{ marginTop: 18 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-          <p className="label">이번 주</p>
-          {perfect && <span className="chip" style={{ color: 'var(--fire)' }}>퍼펙트 위크</span>}
-        </div>
-        <div className={`week ${perfect ? 'fire' : ''}`}>
-          {week.map((x) => (
-            <div className="col" key={x.d}>
-              <div className={`cell ${x.c} ${x.d === today ? 'today' : ''}`} />
-              <span className="small muted">{weekdayKo(x.d)}</span>
-            </div>
-          ))}
-        </div>
-      </section>
+      <WeekStrip week={week} perfect={perfect} />
     </main>
   )
 }
